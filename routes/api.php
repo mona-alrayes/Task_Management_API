@@ -1,8 +1,9 @@
 <?php
 
-use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,4 +28,10 @@ Route::controller(AuthController::class)->group(function () {
 
 });
 
+// Route::group(['middleware' => [ 'auth:api','role:admin']], function () {
+//     Route::apiResource('users', UserController::class)->only('update');
+// });
 
+
+// Route::apiResource('users', UserController::class)->except('update');
+Route::apiResource('users', UserController::class);
