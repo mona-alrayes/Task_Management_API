@@ -78,7 +78,6 @@ class StoreUserRequest extends FormRequest
             'name' => 'الأسم',
             'email' => 'البريد الالكتروني',
             'password' => 'كلمة المرور',
-            'role' => 'الصلاحية'
         ];
     }
 
