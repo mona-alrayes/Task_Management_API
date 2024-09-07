@@ -54,7 +54,7 @@ class AuthController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'password' => $request->password,
         ]);
 
         $token = Auth::login($user);
@@ -62,6 +62,7 @@ class AuthController extends Controller
             'status' => 'success',
             'message' => 'User created successfully',
             'user' => $user,
+            'role' => $user->role,
             'authorisation' => [
                 'token' => $token,
                 'type' => 'bearer',
