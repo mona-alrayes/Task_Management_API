@@ -30,7 +30,8 @@ class User extends Authenticatable implements JWTSubject
      */
     protected $guarded = [
         'role',
-        'user_id'
+        'user_id',
+        'password',
     ];
 
     /**
