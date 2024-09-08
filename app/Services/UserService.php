@@ -94,8 +94,8 @@ class UserService
         try {
 
             //Find the user by ID or throw a 404 exception
-             $user = User::where('user_id', $id)->first();
-            // $user = User::findOrFail($user_id);
+            //  $user = User::where('user_id', $id)->first();
+             $user = User::findOrFail($id);
 
 
             if (!$user) {
