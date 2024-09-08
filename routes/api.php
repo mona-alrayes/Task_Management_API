@@ -28,10 +28,9 @@ Route::controller(AuthController::class)->group(function () {
 
 });
 
-// Route::group(['middleware' => [ 'auth:api','role:admin']], function () {
-//     Route::apiResource('users', UserController::class)->only('update');
-// });
+Route::group(['middleware' => [ 'auth:api','role:admin']], function () {
+    Route::apiResource('users', UserController::class)->only('update');
+});
 
 
-// Route::apiResource('users', UserController::class)->except('update');
-Route::apiResource('users', UserController::class);
+Route::apiResource('users', UserController::class)->except('update');

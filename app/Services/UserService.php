@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Log;
 use Exception;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -12,18 +13,18 @@ use Illuminate\Validation\ValidationException;
 
 /**
  * Class UserService
- * 
+ *
  * Handles operations related to users including CRUD operations, registration, and updates.
  */
 class UserService
 {
     /**
      * Retrieve all users with pagination.
-     * 
+     *
      * @return \Illuminate\Pagination\LengthAwarePaginator|array
      * Returns a paginated list of users with their roles or an error response.
      */
-    public function getUsers()
+    public function getUsers(): \Illuminate\Pagination\LengthAwarePaginator|array
     {
         try {
             // Retrieve users along with their roles, paginated by 5 per page
@@ -41,13 +42,13 @@ class UserService
 
     /**
      * Register a new user.
-     * 
+     *
      * @param array $data
      * The array containing user registration data including 'name', 'email', 'password', and 'role'.
-     * 
+     *
      * @return array
      * An array containing the user resource, a JWT token, or an error response.
-     * 
+     *
      * @throws \Illuminate\Validation\ValidationException
      */
     public function registerUser(array $data): array
@@ -76,15 +77,15 @@ class UserService
 
     /**
      * Update an existing user.
-     * 
+     *
      * @param array $data
      * The array containing updated user data. The 'password' field, if present, will be hashed.
      * @param int $id
      * The ID of the user to be updated.
-     * 
+     *
      * @return User
      * The updated user instance.
-     * 
+     *
      * @throws \Exception
      * Throws an exception if the user is not found or if an error occurs during the update.
      */
@@ -92,35 +93,20 @@ class UserService
     {
         try {
 
-            // Find the user by ID or throw a 404 exception
-            $user = User::find($id);
+            //Find the user by ID or throw a 404 exception
+             $user = User::where('user_id', $id)->first();
+            // $user = User::findOrFail($user_id);
+
+
             if (!$user) {
                 throw new Exception('User not found!');
             }
 
-            // // Update the fields only if they exist in the $data array
-            // if (isset($data['name'])) {
-            //     $user->name = $data['name'];
-            // }
-
-            // if (isset($data['email'])) {
-            //     $user->email = $data['email'];
-            // }
-
-            // if (isset($data['password'])) {
-            //     $user->password = $data['password']; // This will trigger the password mutator
-            // }
-
-            // // Update the role if provided
-            // if (isset($data['role'])) {
-            //     $user->role = $data['role'];
-            // }
+            if (isset($data['role'])) {
+                $user->role = $data['role'];
+            }
             $user->update(array_filter($data));
-
-
-            // Save the updated user instance
-            // $user->save();
-            // Return the updated user instance
+        
             return $user;
         } catch (Exception $e) {
             // Handle any other exceptions
@@ -131,13 +117,13 @@ class UserService
 
     /**
      * Retrieve a user by ID.
-     * 
+     *
      * @param int $id
      * The ID of the user to be retrieved.
-     * 
+     *
      * @return User
      * The user instance if found.
-     * 
+     *
      * @throws \Exception
      * Throws an exception if the user is not found or if an error occurs during retrieval.
      */
@@ -158,13 +144,13 @@ class UserService
 
     /**
      * Delete a user by ID.
-     * 
+     *
      * @param int $id
      * The ID of the user to be deleted.
-     * 
+     *
      * @return array
      * An array containing a success message or an error response.
-     * 
+     *
      * @throws \Exception
      * Throws an exception if the user is not found or if an error occurs during deletion.
      */
