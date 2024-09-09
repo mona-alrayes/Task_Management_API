@@ -90,20 +90,41 @@ class Task extends Model
         return Carbon::parse($value)->format('l, F Y \a\t h:i A');
     }
 
+    /**
+     * Scope for filtering tasks by priority.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param string $priority The priority to filter by (e.g., "high", "medium").
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     public function scopePriority($query, $priority)
     {
         return $query->where('priority', $priority);
     }
 
+    /**
+     * Scope for filtering tasks by status.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param string $status The status to filter by (e.g., "To Do", "In Progress").
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     public function scopeStatus($query, $status)
     {
         return $query->where('status', $status);
     }
+
+    /**
+     * Scope for sorting tasks by due date.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param string $sortOrder The sorting order (e.g., "asc" or "desc").
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     public function scopeSortByDueDate($query, $sortOrder = 'asc')
     {
         return $query->orderBy('due_date', $sortOrder);
     }
-    
 
     /**
      * Relationship with the User model.
