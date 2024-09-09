@@ -1,18 +1,21 @@
 <?php
-
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use Illuminate\Http\Request;
 use App\Services\UserService;
 use App\Http\Resources\UserResource;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use Illuminate\Validation\ValidationException;
 
+/**
+ * UserController
+ *
+ * This controller handles the CRUD operations for users, including user creation,
+ * retrieval, updating, and deletion. It uses the UserService for business logic.
+ */
 class UserController extends Controller
 {
-     /**
+    /**
      * @var UserService
      * The service instance to handle user-related logic.
      */
@@ -28,39 +31,51 @@ class UserController extends Controller
     {
         $this->userService = $userService;
     }
+
     /**
-     * Display a listing of the resource.
+     * Display a listing of users.
+     *
+     * This method retrieves a paginated list of users.
+     *
+     * @return \Illuminate\Http\JsonResponse JSON response containing user data and pagination details.
      */
     public function index(): \Illuminate\Http\JsonResponse
     {
-        $users=$this->userService->getUsers();
+        $users = $this->userService->getUsers();
+
         return response()->json([
             'status' => 'success',
             'message' => 'Users retrieved successfully',
-            'info'=>UserResource::collection($users->items()),
-                'current_page' => $users->currentPage(),
-                'last_page' => $users->lastPage(),
-                'per_page' => $users->perPage(),
-                'total' => $users->total(),
+            'info' => UserResource::collection($users->items()),
+            'current_page' => $users->currentPage(),
+            'last_page' => $users->lastPage(),
+            'per_page' => $users->perPage(),
+            'total' => $users->total(),
         ], 200); // OK
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created user in storage.
+     *
+     * This method creates a new user and returns a response containing the user data and a token.
+     *
+     * @param StoreUserRequest $request The validated request object containing the new user's data.
      * @throws ValidationException
+     * @return \Illuminate\Http\JsonResponse JSON response containing the newly created user and token.
      */
     public function store(StoreUserRequest $request): \Illuminate\Http\JsonResponse
     {
         $user = $this->userService->registerUser($request->validated());
 
         // Check if an error occurred in the user service
-    if (isset($user['status']) && $user['status'] === 'error') {
-        return response()->json([
-            'status' => $user['status'],
-            'message' => $user['message'],
-            'errors' => $user['errors'],
-        ], 500); // Internal Server Error
-    }
+        if (isset($user['status']) && $user['status'] === 'error') {
+            return response()->json([
+                'status' => $user['status'],
+                'message' => $user['message'],
+                'errors' => $user['errors'],
+            ], 500); // Internal Server Error
+        }
+
         return response()->json([
             'status' => 'success',
             'message' => 'User created successfully',
@@ -70,12 +85,18 @@ class UserController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified user.
+     *
+     * This method retrieves a single user by ID and returns a response containing the user data.
+     *
+     * @param string $user_id The ID of the user to retrieve.
      * @throws \Exception
+     * @return \Illuminate\Http\JsonResponse JSON response containing the user data.
      */
     public function show(string $user_id)
     {
         $user = $this->userService->getUserById($user_id);
+
         return response()->json([
             'status' => 'success',
             'message' => 'User retrieved successfully',
@@ -84,14 +105,19 @@ class UserController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified user in storage.
+     *
+     * This method updates the details of a specific user by ID.
+     *
+     * @param UpdateUserRequest $request The validated request object containing the updated user data.
+     * @param string $id The ID of the user to update.
      * @throws \Exception
+     * @return \Illuminate\Http\JsonResponse JSON response containing the updated user data and token.
      */
     public function update(UpdateUserRequest $request, string $id)
     {
-        // $validatedData= $request->validated();
-        $user = $this->userService->updateUser($request->validated() , $id );
-       
+        $user = $this->userService->updateUser($request->validated(), $id);
+
         return response()->json([
             'status' => 'success',
             'message' => 'User updated successfully',
@@ -101,15 +127,21 @@ class UserController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified user from storage.
+     *
+     * This method deletes a specific user by ID.
+     *
+     * @param string $id The ID of the user to delete.
      * @throws \Exception
+     * @return \Illuminate\Http\JsonResponse JSON response containing a success message.
      */
     public function destroy(string $id)
     {
-        $message=$this->userService->deleteUser($id);
+        $message = $this->userService->deleteUser($id);
+
         return response()->json([
-           'status' => $message['status'],
-           'message' => $message['message'],
-        ], 200);
+            'status' => $message['status'],
+            'message' => $message['message'],
+        ], 200); // OK
     }
 }
