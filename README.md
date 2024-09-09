@@ -1,4 +1,4 @@
-# Task Management System  Project
+# Task Management API  Project
 
 ## Description
 This project is a ** Task Management System ** built with **Laravel 10** that provides a **RESTful API**f for managing Tasks and Borrowing them . It allows users to perform **CRUD operations** ( Read, show , update ) on tasks and only change the status of the task for the user that the task was assigned to , with the ability to filter tasks by **priority** and **status** sort them by **Due_date** (ascending and descending), or apply both filtering and sorting simultaneously . Admin to perform **CRUD operations** on tasks like (create and update and delete) , and also Manager can assign tasks using Update . The system Has **JWT Authentication** for ( Register , login , logout , refresh)  . The project follows **repository design patterns** and incorporates **clean code** and **refactoring principles**.
