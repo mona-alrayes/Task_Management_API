@@ -79,12 +79,12 @@ class AuthController extends Controller
         ]);
 
         // Create the new user
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => $request->password, // Automatically hashed in User model
-        ]);
-
+        $user= New User();
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->password = $request->password;
+        $user->save();
+        
         // Log the user in and generate a token
         $token = Auth::login($user);
 

@@ -30,7 +30,7 @@ class UpdateTaskRequest extends FormRequest
             'priority' => ['sometimes', 'string', 'in:highest,high,medium,low,lowest'],
             'assigned_to' => ['nullable', 'integer', 'exists:users,user_id'],
             'status' => ['sometimes', 'string', 'in:To Do,In progress,Done'],
-            'due_date' => ['sometimes', 'date'],
+            'due_date' => ['sometimes', 'date_format:d-m-Y H:i'],
         ];
     }
 
