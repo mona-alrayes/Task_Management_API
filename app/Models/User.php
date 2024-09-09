@@ -10,10 +10,9 @@ use Laravel\Sanctum\HasApiTokens;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-
 class User extends Authenticatable implements JWTSubject
 {
-    use HasApiTokens, HasFactory, Notifiable , SoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     /**
      * The primary key associated with the table.
@@ -28,7 +27,6 @@ class User extends Authenticatable implements JWTSubject
      *
      * @var array
      */
-    
     protected $guarded = [
         'role',
         'user_id',
@@ -54,9 +52,6 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
     ];
 
-
-
-
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *
@@ -68,7 +63,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Return a key-value array, containing any custom claims to be added to the JWT.
+     * Return a key-value array containing any custom claims to be added to the JWT.
      *
      * @return array
      */
@@ -81,13 +76,20 @@ class User extends Authenticatable implements JWTSubject
      * Automatically hash the password when setting it.
      *
      * @param string $password
+     * The password to be hashed before saving.
      */
     public function setPasswordAttribute($password)
     {
         $this->attributes['password'] = Hash::make($password);
     }
 
-    public function tasks(){
+    /**
+     * Define a one-to-many relationship with the Task model.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function tasks()
+    {
         return $this->hasMany(Task::class);
     }
 }
