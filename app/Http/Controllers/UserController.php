@@ -95,7 +95,8 @@ class UserController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'User updated successfully',
-            'user' => new UserResource($user),
+            'user' => new UserResource($user['user']),
+            'token' => $user['token'],
         ], 200); // OK
     }
 

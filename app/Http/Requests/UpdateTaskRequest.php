@@ -25,16 +25,16 @@ class UpdateTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title'=> ['sometimes','string','min:3','max:255'],
-            'description' =>['sometimes','string','min:10','max:2000'],
-            'priority' =>['sometimes','string','in:highest,high,medium,low,lowest'],
-            'assigned_to' => ['sometimes','integer','exists:users,user_id'],
-            'status' => ['sometimes','string','in:To Do,In progress,Done'],
-            'due_date' => ['sometimes','date'],
+            'title' => ['sometimes', 'string', 'min:3', 'max:255'],
+            'description' => ['sometimes', 'string', 'min:10', 'max:2000'],
+            'priority' => ['sometimes', 'string', 'in:highest,high,medium,low,lowest'],
+            'assigned_to' => ['nullable', 'integer', 'exists:users,user_id'],
+            'status' => ['sometimes', 'string', 'in:To Do,In progress,Done'],
+            'due_date' => ['sometimes', 'date'],
         ];
     }
 
-     /**
+    /**
      * Get the custom error messages for the validator.
      *
      * @return array<string, string>
@@ -48,7 +48,7 @@ class UpdateTaskRequest extends FormRequest
             'min' => 'حقل :attribute يجب أن يكون 3 محارف على الأقل',
             'description.min' => 'عدد محارف :attribute لا يقل عن 10 محارف',
             'priority.in' => 'حقل :attribute يجب أن يكون واحدًا من القيم التالية: highest, high,medium,low, lowest',
-            'status.in' => 'حقل :attribute يجب أن يكون واحدًا من القيم التالية: To Do, progress, Done', 
+            'status.in' => 'حقل :attribute يجب أن يكون واحدًا من القيم التالية: To Do, progress, Done',
             'date' => 'حقل :attribute يجب ان يكون بصيغة تاريخ ',
         ];
     }
@@ -66,30 +66,34 @@ class UpdateTaskRequest extends FormRequest
             'priority' => 'الأولوية',
             'assigned_to' => 'مسند الى ',
             'status' => 'الحالة',
-            'due_date'=> 'تاريخ الانجاز'
+            'due_date' => 'تاريخ الانجاز'
         ];
     }
 
     protected function prepareForValidation()
-    {    
-            //In input form user input the name of the person to assign the task to and here we get the object of this person to get the id of it 
-            $user=User::where('name',$this->input('assigned_to'))->first();
-            if($user){
-                $this->merge([
-                    'title' => ucwords(strtolower($this->input('title'))),
-                    'description' => ucwords(strtolower($this->input('description'))),
-                    'assigned_to' => $user->id,
-                    
-                ]);
-            }else{
+    {
+        $user = null;
+
+        if ($this->filled('assigned_to')) {
+            // Get the user by name if assigned_to is provided
+            $user = User::where('name', $this->input('assigned_to'))->first();
+            if (!$user) {
                 throw new HttpResponseException(response()->json([
                     'status' => 'error',
                     'message' => 'Validation failed.',
-                    'errors' => ['User_name' => ['User not found']],
+                    'errors' => ['assigned_to' => ['User not found']],
                 ], 422));
             }
-           
+        }
+
+        // Merge the transformed inputs
+        $this->merge([
+            'title' => ucwords(strtolower($this->input('title'))),
+            'description' => ucwords(strtolower($this->input('description'))),
+            'assigned_to' => $user ? $user->user_id : null,
+        ]);
     }
+
 
     /**
      * Handle a failed validation attempt.
@@ -106,4 +110,3 @@ class UpdateTaskRequest extends FormRequest
         ], 422));
     }
 }
-

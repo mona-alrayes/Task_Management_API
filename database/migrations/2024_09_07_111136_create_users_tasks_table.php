@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id('task_id');
             $table->string('title');
             $table->text('description');
-            $table->enum('priority',['highest','high','medium','low','lowest']);
-            $table->unsignedBigInteger('assigned_to')->index();
+            $table->enum('priority', ['highest', 'high', 'medium', 'low', 'lowest']);
+            $table->unsignedBigInteger('assigned_to')->nullable();
             $table->foreign('assigned_to')->references('user_id')->on('users')->onDelete('cascade');
-            $table->enum('status',['To Do','In progress','Done'])->default('To Do');
+            $table->enum('status', ['To Do', 'In progress', 'Done'])->default('To Do');
             $table->timestamp('due_date')->nullable();
             $table->softDeletes();
             $table->timestamps();

@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreTaskRequest;
-use App\Http\Resources\TaskResource;
-use App\Models\Task;
-use App\Services\TaskService;
 use Illuminate\Http\Request;
+use App\Services\TaskService;
+use App\Http\Resources\TaskResource;
+use App\Http\Requests\StoreTaskRequest;
+use App\Http\Requests\UpdateStatusRequest;
+use App\Http\Requests\UpdateTaskRequest;
 
 class TaskController extends Controller
 {
@@ -19,18 +20,18 @@ class TaskController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(request $request)
     {
-        $tasks=Task::with('user')->paginate(10);
+        $tasks=$this->TaskService->getAllTasks($request);
         return response()->json([
             'status' => 'success',
             'message' => 'Tasks retrieved successfully',
             'users' => [
-                'info'=>TaskResource::collection($tasks->items()),
-                'current_page' => $tasks->currentPage(),
-                'last_page' => $tasks->lastPage(),
-                'per_page' => $tasks->perPage(),
-                'total' => $tasks->total(),
+                'info' => TaskResource::collection($tasks['data']), // Convert the resource collection to array
+                'current_page' => $tasks['current_page'], 
+                'last_page' => $tasks['last_page'], 
+                'per_page' => $tasks['per_page'], 
+                'total' => $tasks['total'], 
             ],
         ], 200); // OK
     }
@@ -40,11 +41,11 @@ class TaskController extends Controller
      */
     public function store(StoreTaskRequest $request)
     {
-       $validatedTask = $request->validated();
+        $task = $this->TaskService->storeTask($request->validated());
         return response()->json([
             'status' => 'success',
             'message' => 'task created successfully',
-            'book' => $task,
+            'task' => $task,
         ], 201); // Created
     }
 
@@ -53,10 +54,11 @@ class TaskController extends Controller
      */
     public function show(string $id)
     {
+        $fetchedData = $this->TaskService->showTask($id);
         return response()->json([
             'status' => 'success',
             'message' => 'Task retrieved successfully',
-            'book' => TaskResource::make($fetchedData),
+            'Task' => TaskResource::make($fetchedData),
         ], 200); // OK
     }
 
@@ -64,8 +66,19 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateTaskRequest $request, string $id)
     {
+        $task = $this->TaskService->updateTask($request->validated(), $id);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Book updated successfully',
+            'book' => TaskResource::make($task),
+        ], 200); // OK
+    }
+
+    public function updateByAssignedUser(UpdateStatusRequest $request, string $id)
+    {
+        $task = $this->TaskService->updateStatus($request->validated(), $id);
         return response()->json([
             'status' => 'success',
             'message' => 'Book updated successfully',

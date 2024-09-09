@@ -16,7 +16,7 @@ class TaskResource extends JsonResource
     {
         return [
             'title' => $this->title,
-            'assigned_to' => $this->user->name,
+            'assigned_to' => $this->user ? $this->user->name : null, // Check if user is not null
             'description' => $this->description,
             'status' => $this->status,
             'due_date' => $this->due_date,

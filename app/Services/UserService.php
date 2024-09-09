@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Exception;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 
 /**
@@ -49,9 +50,14 @@ class UserService
     public function registerUser(array $data): array
     {
         try {
+            // Manually create the user without the password
+            $user = new User();
+            $user->name = $data['name'];
+            $user->email = $data['email'];
 
-            // Create a new user with the provided data
-            $user = User::create($data);
+            // Assign the password which will be handled by the mutator (hashing it)
+            $user->password = $data['password'];
+            $user->save();
 
             // Generate a JWT token for the user
             $token = auth()->login($user);
@@ -61,7 +67,6 @@ class UserService
                 'token' => $token,
             ];
         } catch (Exception $e) {
-            // Handle any other exceptions
             return [
                 'status' => 'error',
                 'message' => 'An error occurred during registration.',
@@ -69,6 +74,7 @@ class UserService
             ];
         }
     }
+
 
     /**
      * Update an existing user.
@@ -84,13 +90,13 @@ class UserService
      * @throws \Exception
      * Throws an exception if the user is not found or if an error occurs during the update.
      */
-    public function updateUser(array $data, string $id): User
+    public function updateUser(array $data, string $id): array
     {
         try {
 
             //Find the user by ID or throw a 404 exception
             //  $user = User::where('user_id', $id)->first();
-             $user = User::findOrFail($id);
+            $user = User::findOrFail($id);
 
 
             if (!$user) {
@@ -101,8 +107,12 @@ class UserService
                 $user->role = $data['role'];
             }
             $user->update(array_filter($data));
-        
-            return $user;
+            $token = auth()->login($user);
+
+            return [
+                'user' => $user,
+                'token' => $token,
+            ];
         } catch (Exception $e) {
             // Handle any other exceptions
             throw new Exception('An error occurred during updating: ' . $e->getMessage());

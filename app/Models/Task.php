@@ -90,6 +90,21 @@ class Task extends Model
         return Carbon::parse($value)->format('l, F Y \a\t h:i A');
     }
 
+    public function scopePriority($query, $priority)
+    {
+        return $query->where('priority', $priority);
+    }
+
+    public function scopeStatus($query, $status)
+    {
+        return $query->where('status', $status);
+    }
+    public function scopeSortByDueDate($query, $sortOrder = 'asc')
+    {
+        return $query->orderBy('due_date', $sortOrder);
+    }
+    
+
     /**
      * Relationship with the User model.
      *

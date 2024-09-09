@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
 
 /*
@@ -30,7 +31,14 @@ Route::controller(AuthController::class)->group(function () {
 
 Route::group(['middleware' => [ 'auth:api','role:admin']], function () {
     Route::apiResource('users', UserController::class)->only('update');
+    Route::apiResource('tasks', TaskController::class)->except('updateByAssignedUser');
 });
 
-
+Route::group(['middleware' => [ 'auth:api','role:user']], function () {
+    Route::put('/tasks/{id}/changeStatus', [TaskController::class, 'updateByAssignedUser']);
+});
+Route::group(['middleware' => [ 'auth:api','role:manager']], function () {
+    Route::put('/tasks/{id}/assign', [TaskController::class, 'update']);
+});
 Route::apiResource('users', UserController::class)->except('update');
+Route::apiResource('tasks', TaskController::class)->only(['index', 'show']);
