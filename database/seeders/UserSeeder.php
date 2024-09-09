@@ -19,7 +19,18 @@ class UserSeeder extends Seeder
             'password' => '12345678',
             'role' => 'admin',
         ]);
-        
+        $Manager = User::factory()->create([
+            'name' => 'Sami',
+            'email' => 'Sami@gmail.com',
+            'password' => '12345678',
+            'role' => 'manager',
+        ]);
+        $user = User::factory()->create([
+            'name' => 'Tina',
+            'email' => 'Tina@gmail.com',
+            'password' => '12345678',
+            'role' => 'user',
+        ]);
 
         // Optionally, create more users
         User::factory()->count(10)->create();
