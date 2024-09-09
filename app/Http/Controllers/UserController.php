@@ -67,15 +67,6 @@ class UserController extends Controller
     {
         $user = $this->userService->registerUser($request->validated());
 
-        // Check if an error occurred in the user service
-        if (isset($user['status']) && $user['status'] === 'error') {
-            return response()->json([
-                'status' => $user['status'],
-                'message' => $user['message'],
-                'errors' => $user['errors'],
-            ], 500); // Internal Server Error
-        }
-
         return response()->json([
             'status' => 'success',
             'message' => 'User created successfully',
