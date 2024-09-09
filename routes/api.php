@@ -28,7 +28,7 @@ Route::controller(AuthController::class)->group(function () {
 
 // Admin-only routes
 Route::group(['middleware' => ['auth:api', 'role:admin']], function () {
-    Route::apiResource('users', UserController::class)->only(['update']);
+    Route::apiResource('users', UserController::class)->only(['update' , 'delete']);
     Route::apiResource('tasks', TaskController::class)->except(['updateByAssignedUser']);
 });
 
@@ -43,5 +43,5 @@ Route::group(['middleware' => ['auth:api', 'role:manager']], function () {
 });
 
 // Publicly accessible routes to view users and tasks
-Route::apiResource('users', UserController::class)->except(['update']);
+Route::apiResource('users', UserController::class)->except(['update', 'delete']);
 Route::apiResource('tasks', TaskController::class)->only(['index', 'show']);
