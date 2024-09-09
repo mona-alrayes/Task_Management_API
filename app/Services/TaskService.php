@@ -18,10 +18,13 @@ class TaskService
      * Retrieve all tasks with optional filters and sorting.
      * 
      * @param Request $request
-     * The request object containing optional filters (priority , status) and sorting options (sort_by, sort_order).
+     * The request object containing optional filters (priority, status) and sorting options (sort_order).
      * 
      * @return array
      * An array containing paginated task resources.
+     * 
+     * @throws \Exception
+     * Throws an exception if there is an error during the process.
      */
     public function getAllTasks(Request $request): array
     {
@@ -39,9 +42,9 @@ class TaskService
             if ($tasks->isEmpty()) {
                 throw new ModelNotFoundException('No tasks found.');
             }
-            // return $tasks;
+
             return [
-                'data' => $tasks->items(), // the items on the current page
+                'data' => $tasks->items(), // The items on the current page
                 'current_page' => $tasks->currentPage(),
                 'last_page' => $tasks->lastPage(),
                 'per_page' => $tasks->perPage(),
@@ -56,13 +59,13 @@ class TaskService
      * Store a new task.
      * 
      * @param array $data
-     * An associative array containing 'title', 'author', 'published_at', and 'description'.
+     * An associative array containing the task's details (e.g., title, description, priority, etc.).
      * 
      * @return Task
      * The created task resource.
      * 
      * @throws \Exception
-     * Throws an exception if the task creation fails.
+     * Throws an exception if task creation fails.
      */
     public function storeTask(array $data): Task
     {
@@ -107,7 +110,7 @@ class TaskService
      * Update an existing task.
      * 
      * @param array $data
-     * The data array containing the fields to update.
+     * The data array containing the fields to update (e.g., title, status, priority).
      * @param string $id
      * The ID of the task to update.
      * 
@@ -132,6 +135,20 @@ class TaskService
         }
     }
 
+    /**
+     * Update the status of a specific task.
+     * 
+     * @param array $data
+     * The data array containing the new status field.
+     * @param string $id
+     * The ID of the task to update.
+     * 
+     * @return Task
+     * The updated task resource.
+     * 
+     * @throws \Exception
+     * Throws an exception if the task is not found or update fails.
+     */
     public function updateStatus(array $data, string $id): Task
     {
         try {
@@ -154,10 +171,10 @@ class TaskService
      * The ID of the task to delete.
      * 
      * @return string
-     * A message confirming the deletion.
+     * A message confirming the successful deletion.
      * 
      * @throws \Exception
-     * Throws an exception if the task is not found.
+     * Throws an exception if the task is not found or deletion fails.
      */
     public function deleteTask(string $id): string
     {
